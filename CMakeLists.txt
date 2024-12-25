@@ -41,37 +41,41 @@ execute_process(
 # Import nanobind through CMake's find_package mechanism
 find_package(nanobind CONFIG REQUIRED)
 
-# We are now ready to compile the actual extension module
-nanobind_add_module(
-  # Name of the extension
-  pysdt
-
-  # Target the stable ABI for Python 3.12+, which reduces
-  # the number of binary wheels that must be built. This
-  # does nothing on older Python versions
-  STABLE_ABI
-
-  # Build libnanobind statically and merge it into the
-  # extension (which itself remains a shared library)
-  #
-  # If your project builds multiple extensions, you can
-  # replace this flag by NB_SHARED to conserve space by
-  # reusing a shared libnanobind across libraries
-  NB_STATIC
-
-  src/pysdt.cpp
-)
+set(BINDINGS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src/bindings)
 
 find_library(SDT_PATH SDT HINTS sdt-libs/SDT_macosx_lib_83.0.0/SDT)
-add_library(sdt SHARED IMPORTED)
-set_target_properties(sdt PROPERTIES IMPORTED_LOCATION ${SDT_PATH})
-set_target_properties(pysdt PROPERTIES INSTALL_RPATH "@loader_path/SDT.framework/")
+add_library(sdt SHARED IMPORTED src/wrappers/Macros.h)
+set_target_properties(sdt
+  PROPERTIES IMPORTED_LOCATION ${SDT_PATH}
+)
+set_target_properties(sdt
+  PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "${SDT_PATH}/Headers"
+)
 
-#get_target_property(PYSDT_INSTALL_RPATH pysdt INSTALL_NAME_DIR)
+set(MODULE_LIST
+  Liquids
+  Resonators
+)
 
-message(STATUS "SDT_PATH: ${PYSDT_INSTALL_RPATH}")
+foreach(moduleFile IN LISTS MODULE_LIST)
+  string(TOLOWER ${moduleFile} moduleName)
 
-target_link_libraries(pysdt PRIVATE sdt)
-## Install directive for scikit-build-core
-install(TARGETS pysdt LIBRARY DESTINATION pysdt)
+  nanobind_add_module(
+    ${moduleName} STABLE_ABI NB_SHARED ${BINDINGS_DIR}/${moduleFile}.cpp
+  )
+
+  set_target_properties(${moduleName}
+    PROPERTIES INSTALL_RPATH "@loader_path;@loader_path/SDT.framework"
+  )
+
+  target_link_libraries(${moduleName} PRIVATE sdt)
+  install(TARGETS ${moduleName} LIBRARY DESTINATION pysdt)
+endforeach()
+
+
+set_target_properties(nanobind
+  PROPERTIES LIBRARY_OUTPUT_DIRECTORY pysdt
+)
+install(TARGETS nanobind LIBRARY DESTINATION pysdt)
+
 install(IMPORTED_RUNTIME_ARTIFACTS sdt DESTINATION pysdt)
