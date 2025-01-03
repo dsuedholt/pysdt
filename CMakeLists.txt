@@ -53,6 +53,7 @@ set_target_properties(sdt
 )
 
 set(MODULE_LIST
+  Common
   Liquids
   Resonators
 )
