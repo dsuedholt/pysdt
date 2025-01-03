@@ -1,7 +1,7 @@
 #pragma once
 
 #include <SDT/SDTResonators.h>
-#include "Macros.h"
+#include "WrapperMacros.h"
 
 class Resonator {
 public:

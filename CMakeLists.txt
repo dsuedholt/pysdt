@@ -44,7 +44,7 @@ find_package(nanobind CONFIG REQUIRED)
 set(BINDINGS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src/bindings)
 
 find_library(SDT_PATH SDT HINTS sdt-libs/SDT_macosx_lib_83.0.0/SDT)
-add_library(sdt SHARED IMPORTED src/wrappers/Macros.h)
+add_library(sdt SHARED IMPORTED src/wrappers/WrapperMacros.h)
 set_target_properties(sdt
   PROPERTIES IMPORTED_LOCATION ${SDT_PATH}
 )
@@ -52,31 +52,12 @@ set_target_properties(sdt
   PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "${SDT_PATH}/Headers"
 )
 
-set(MODULE_LIST
-  Common
-  Liquids
-  Resonators
+nanobind_add_module(pysdt STABLE_ABI NB_STATIC src/pysdt.cpp)
+
+set_target_properties(pysdt
+  PROPERTIES INSTALL_RPATH "@loader_path;@loader_path/SDT.framework"
 )
 
-foreach(moduleFile IN LISTS MODULE_LIST)
-  string(TOLOWER ${moduleFile} moduleName)
-
-  nanobind_add_module(
-    ${moduleName} STABLE_ABI NB_SHARED ${BINDINGS_DIR}/${moduleFile}.cpp
-  )
-
-  set_target_properties(${moduleName}
-    PROPERTIES INSTALL_RPATH "@loader_path;@loader_path/SDT.framework"
-  )
-
-  target_link_libraries(${moduleName} PRIVATE sdt)
-  install(TARGETS ${moduleName} LIBRARY DESTINATION pysdt)
-endforeach()
-
-
-set_target_properties(nanobind
-  PROPERTIES LIBRARY_OUTPUT_DIRECTORY pysdt
-)
-install(TARGETS nanobind LIBRARY DESTINATION pysdt)
-
+target_link_libraries(pysdt PRIVATE sdt)
+install(TARGETS pysdt LIBRARY DESTINATION pysdt)
 install(IMPORTED_RUNTIME_ARTIFACTS sdt DESTINATION pysdt)

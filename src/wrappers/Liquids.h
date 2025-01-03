@@ -1,7 +1,7 @@
 #pragma once
 
 #include <SDT/SDTLiquids.h>
-#include "Macros.h"
+#include "WrapperMacros.h"
 
 class Bubble {
 public:
