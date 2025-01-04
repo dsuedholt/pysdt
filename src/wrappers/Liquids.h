@@ -11,15 +11,15 @@ public:
     SDT_WRAP_PROPERTY(Bubble, RiseFactor, double)
     SDT_WRAP_PROPERTY(Bubble, Depth, double)
 
-    void trigger() { SDTBubble_trigger(ptr); }
-    void normAmp() { SDTBubble_normAmp(ptr); }
+    void trigger() { SDTBubble_trigger(ptr.get()); }
+    void normAmp() { SDTBubble_normAmp(ptr.get()); }
 
-    SDT_WRAP_DSP(Bubble)
+    void dsp() { SDTBubble_dsp(ptr.get()); }
 };
 
 class FluidFlow {
 public:
-    SDT_WRAP_STRUCT_WITH_ONE_ARG(FluidFlow, int)
+    SDT_WRAP_STRUCT(FluidFlow)
 
     SDT_WRAP_PROPERTY(FluidFlow, NBubbles, int)
     SDT_WRAP_PROPERTY(FluidFlow, MinRadius, double)
@@ -32,5 +32,5 @@ public:
     SDT_WRAP_PROPERTY(FluidFlow, RiseCutoff, double)
     SDT_WRAP_PROPERTY(FluidFlow, AvgRate, double)
 
-    SDT_WRAP_DSP(FluidFlow)
+    void dsp() { SDTFluidFlow_dsp(ptr.get()); }
 };

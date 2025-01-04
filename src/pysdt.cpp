@@ -1,8 +1,10 @@
 #include <nanobind/nanobind.h>
 #include <nanobind/ndarray.h>
+#include <nanobind/stl/shared_ptr.h>
 
 #include <SDT/SDTCommon.h>
 
+#include "wrappers/Interactors.h"
 #include "wrappers/Liquids.h"
 #include "wrappers/Resonators.h"
 
@@ -76,6 +78,24 @@ void add_common_submodule(nb::module_ &root) {
     );
 }
 
+void add_interactors_submodule(nb::module_& root) {
+    nb::module_ m = root.def_submodule("interactors");
+
+    nb::class_<Interactor>(m, "Interactor")
+        .SDT_BIND_PROPERTY_RW(first_resonator, Interactor, FirstResonator, std::shared_ptr<Resonator>)
+        .SDT_BIND_PROPERTY_RW(second_resonator, Interactor, SecondResonator, std::shared_ptr<Resonator>)
+        .SDT_BIND_PROPERTY_RW(first_point, Interactor, FirstPoint, long)
+        .SDT_BIND_PROPERTY_RW(second_point, Interactor, SecondPoint, long)
+        .def("compute_force", &Interactor::computeForce)
+        .def("dsp", &Interactor::dsp);
+
+    nb::class_<Impact, Interactor>(m, "Impact")
+        .def(nb::init<>())
+        .SDT_BIND_PROPERTY_RW(stiffness, Impact, Stiffness, double)
+        .SDT_BIND_PROPERTY_RW(dissipation, Impact, Dissipation, double)
+        .SDT_BIND_PROPERTY_RW(shape, Impact, Shape, double);
+}
+
 void add_liquids_submodule(nb::module_& root) {
     nb::module_ m = root.def_submodule("liquids");
 
@@ -131,6 +151,7 @@ void add_resonators_submodule(nb::module_& root) {
 
 NB_MODULE(pysdt, m) {
     add_common_submodule(m);
+    add_interactors_submodule(m);
     add_liquids_submodule(m);
     add_resonators_submodule(m);
 }
