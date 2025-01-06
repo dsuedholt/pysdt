@@ -1,9 +1,11 @@
 #include <nanobind/nanobind.h>
 #include <nanobind/ndarray.h>
 #include <nanobind/stl/shared_ptr.h>
+#include <nanobind/stl/pair.h>
 
 #include <SDT/SDTCommon.h>
 
+#include "wrappers/Control.h"
 #include "wrappers/Interactors.h"
 #include "wrappers/Liquids.h"
 #include "wrappers/Resonators.h"
@@ -14,6 +16,53 @@ namespace nb = nanobind;
 using namespace nb::literals;
 
 using arr1d = nb::ndarray<double, nb::ndim<1>>;
+
+using namespace sdtwrappers;
+
+void add_control_submodule(nb::module_ &root) {
+    nb::module_ m = root.def_submodule("control");
+
+    nb::class_<Bouncing>(m, "Bouncing")
+        .def(nb::init<>())
+        .SDT_BIND_PROPERTY_RW(restitution, Bouncing, Restitution, double)
+        .SDT_BIND_PROPERTY_RW(height, Bouncing, Height, double)
+        .SDT_BIND_PROPERTY_RW(irregularity, Bouncing, Irregularity, double)
+        .def("reset", &Bouncing::reset)
+        .def("dsp", &Bouncing::dsp)
+        .def("has_finished", &Bouncing::hasFinished);
+
+    nb::class_<Breaking>(m, "Breaking")
+        .def(nb::init<>())
+        .SDT_BIND_PROPERTY_RW(stored_energy, Breaking, StoredEnergy, double)
+        .SDT_BIND_PROPERTY_RW(crushing_energy, Breaking, CrushingEnergy, double)
+        .SDT_BIND_PROPERTY_RW(granularity, Breaking, Granularity, double)
+        .SDT_BIND_PROPERTY_RW(fragmentation, Breaking, Fragmentation, double)
+        .def("reset", &Breaking::reset)
+        .def("dsp", &Breaking::dsp)
+        .def("has_finished", &Breaking::hasFinished);
+
+    nb::class_<Crumpling>(m, "Crumpling")
+        .def(nb::init<>())
+        .SDT_BIND_PROPERTY_RW(crushing_energy, Crumpling, CrushingEnergy, double)
+        .SDT_BIND_PROPERTY_RW(granularity, Crumpling, Granularity, double)
+        .SDT_BIND_PROPERTY_RW(fragmentation, Crumpling, Fragmentation, double)
+        .def("dsp", &Crumpling::dsp);
+
+    nb::class_<Rolling>(m, "Rolling")
+        .def(nb::init<>())
+        .SDT_BIND_PROPERTY_RW(energy, Rolling, Grain, double)
+        .SDT_BIND_PROPERTY_RW(size, Rolling, Depth, double)
+        .SDT_BIND_PROPERTY_RW(speed, Rolling, Mass, double)
+        .SDT_BIND_PROPERTY_RW(speed, Rolling, Velocity, double)
+        .def("dsp", &Rolling::dsp);
+
+    nb::class_<Scraping>(m, "Scraping")
+        .def(nb::init<>())
+        .SDT_BIND_PROPERTY_RW(energy, Scraping, Grain, double)
+        .SDT_BIND_PROPERTY_RW(size, Scraping, Force, double)
+        .SDT_BIND_PROPERTY_RW(speed, Scraping, Velocity, double)
+        .def("dsp", &Scraping::dsp);
+}
 
 void add_common_submodule(nb::module_ &root) {
     nb::module_ m = root.def_submodule("common");
@@ -26,7 +75,7 @@ void add_common_submodule(nb::module_ &root) {
 
     m.def("blackman",
         [] (arr1d& sig) {
-            SDT_blackman(sig.data(), sig.size());
+            SDT_blackman(sig.data(), static_cast<int>(sig.size()));
         });
     m.def("exp_rand", &SDT_expRand);
     m.def("gaussian_1d", &SDT_gaussian1D);
@@ -34,17 +83,17 @@ void add_common_submodule(nb::module_ &root) {
 
     m.def("haar",
         [] (arr1d& sig) {
-            SDT_haar(sig.data(), sig.size());
+            SDT_haar(sig.data(), static_cast<int>(sig.size()));
         });
 
     m.def("hanning",
         [] (arr1d& sig) {
-            SDT_hanning(sig.data(), sig.size());
+            SDT_hanning(sig.data(), static_cast<int>(sig.size()));
         });
 
     m.def("ihaar",
         [] (arr1d& sig) {
-            SDT_ihaar(sig.data(), sig.size());
+            SDT_ihaar(sig.data(), static_cast<int>(sig.size()));
         });
 
     m.def("kinetic", &SDT_kinetic);
@@ -54,7 +103,7 @@ void add_common_submodule(nb::module_ &root) {
 
     m.def("sinc",
         [] (arr1d& sig, double f) {
-            SDT_sinc(sig.data(), f, sig.size());
+            SDT_sinc(sig.data(), f, static_cast<int>(sig.size()));
         });
 
     m.def("true_peak_pos",
@@ -150,6 +199,7 @@ void add_resonators_submodule(nb::module_& root) {
 }
 
 NB_MODULE(pysdt, m) {
+    add_control_submodule(m);
     add_common_submodule(m);
     add_interactors_submodule(m);
     add_liquids_submodule(m);

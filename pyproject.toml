@@ -47,6 +47,6 @@ MACOSX_DEPLOYMENT_TARGET = "10.14"
 
 [dependency-groups]
 dev = [
-    "nanobind>=2.4.0",
+    "nanobind @ git+https://github.com/wjakob/nanobind@master",
     "scikit-build-core[pyproject]>=0.10.7",
 ]
