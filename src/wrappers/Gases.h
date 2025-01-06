@@ -20,7 +20,7 @@ namespace sdtwrappers {
 
         void trigger() { SDTExplosion_trigger(ptr.get()); }
 
-        SDT_WRAP_DSP_MANY_OUT_NO_IN(Explosion, 2)
+        SDT_WRAP_DSP_MANY_OUT_WITHOUT_INPUT(Explosion, 2)
     };
 
     class WindKarman {

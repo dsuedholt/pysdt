@@ -38,7 +38,14 @@ public: \
         return {updated, dspOuts}; \
     } \
 
-#define SDT_WRAP_DSP_MANY_OUT_NO_IN(STRUCT_NAME, NUM_OUTS) \
+#define SDT_WRAP_DSP_MANY_OUT_WITH_INPUT(STRUCT_NAME, NUM_OUTS) \
+    std::array<double, NUM_OUTS> dsp(const double in) { \
+        std::array<double, NUM_OUTS> dspOuts = {}; \
+        SDT##STRUCT_NAME##_dsp(ptr.get(), dspOuts.data(), in); \
+        return dspOuts; \
+    } \
+
+#define SDT_WRAP_DSP_MANY_OUT_WITHOUT_INPUT(STRUCT_NAME, NUM_OUTS) \
     std::array<double, NUM_OUTS> dsp() { \
         std::array<double, NUM_OUTS> dspOuts = {}; \
         SDT##STRUCT_NAME##_dsp(ptr.get(), dspOuts.data()); \

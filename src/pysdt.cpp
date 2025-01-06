@@ -9,6 +9,7 @@
 #include "wrappers/Analysis.h"
 #include "wrappers/Control.h"
 #include "wrappers/DCMotor.h"
+#include "wrappers/Demix.h"
 #include "wrappers/Gases.h"
 #include "wrappers/Interactors.h"
 #include "wrappers/Liquids.h"
@@ -186,6 +187,19 @@ void add_dcmotor_submodule(nb::module_ &root) {
         .def("dsp", &DCMotor::dsp);
 }
 
+void add_demix_submodule(nb::module_ &root) {
+    nb::module_ m = root.def_submodule("demix");
+
+    nb::class_<Demix>(m, "Demix")
+        .def(nb::init<int, int>())
+        .SDT_BIND_PROPERTY_RW(size, Demix, Size, int)
+        .SDT_BIND_PROPERTY_RW(radius, Demix, Radius, int)
+        .SDT_BIND_PROPERTY_RW(overlap, Demix, Overlap, double)
+        .SDT_BIND_PROPERTY_RW(noise_threshold, Demix, NoiseThreshold, double)
+        .SDT_BIND_PROPERTY_RW(tonal_threshold, Demix, TonalThreshold, double)
+        .def("dsp", &Demix::dsp);
+}
+
 void add_gases_submodule(nb::module_ &root) {
     nb::module_ m = root.def_submodule("gases");
 
@@ -299,6 +313,7 @@ NB_MODULE(pysdt, m) {
     add_control_submodule(m);
     add_common_submodule(m);
     add_dcmotor_submodule(m);
+    add_demix_submodule(m);
     add_gases_submodule(m);
     add_interactors_submodule(m);
     add_liquids_submodule(m);

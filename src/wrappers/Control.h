@@ -28,7 +28,7 @@ namespace sdtwrappers {
 
         void reset() { SDTBreaking_reset(ptr.get()); }
 
-        SDT_WRAP_DSP_MANY_OUT_NO_IN(Breaking, 2)
+        SDT_WRAP_DSP_MANY_OUT_WITHOUT_INPUT(Breaking, 2)
 
         bool hasFinished() { return SDTBreaking_hasFinished(ptr.get()); }
     };
@@ -41,7 +41,7 @@ namespace sdtwrappers {
         SDT_WRAP_PROPERTY(Crumpling, Granularity, double)
         SDT_WRAP_PROPERTY(Crumpling, Fragmentation, double)
 
-        SDT_WRAP_DSP_MANY_OUT_NO_IN(Crumpling, 2)
+        SDT_WRAP_DSP_MANY_OUT_WITHOUT_INPUT(Crumpling, 2)
     };
 
     class Rolling {
