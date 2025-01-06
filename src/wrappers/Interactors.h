@@ -57,7 +57,7 @@ namespace sdtwrappers {
 
     class Impact : public Interactor {
     public:
-        Impact() : Interactor(SDTImpact_new(), SDTImpact_free) {}
+        Impact() : Interactor(SDTImpact_new(), &SDTImpact_free) {}
 
         SDT_WRAP_PROPERTY(Impact, Stiffness, double)
         SDT_WRAP_PROPERTY(Impact, Dissipation, double)
@@ -66,7 +66,7 @@ namespace sdtwrappers {
 
     class Friction : public Interactor {
     public:
-        Friction() : Interactor(SDTFriction_new(), SDTFriction_free) {}
+        Friction() : Interactor(SDTFriction_new(), &SDTFriction_free) {}
 
         SDT_WRAP_PROPERTY(Friction, NormalForce, double)
         SDT_WRAP_PROPERTY(Friction, StribeckVelocity, double)

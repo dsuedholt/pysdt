@@ -11,6 +11,7 @@
 #include "wrappers/DCMotor.h"
 #include "wrappers/Demix.h"
 #include "wrappers/Effects.h"
+#include "wrappers/Filters.h"
 #include "wrappers/Gases.h"
 #include "wrappers/Interactors.h"
 #include "wrappers/Liquids.h"
@@ -225,6 +226,84 @@ void add_effects_submodule(nb::module_ &root) {
         .def("dsp", &Reverb::dsp);
 }
 
+void add_filters_submodule(nb::module_ &root) {
+    nb::module_ m = root.def_submodule("filters");
+
+    nb::class_<AllPass>(m, "AllPass")
+        .def(nb::init<>())
+        .def("set_feedback", &AllPass::setFeedback)
+        .def("dsp", &AllPass::dsp);
+
+    nb::class_<Average>(m, "Average")
+        .def(nb::init<long>())
+        .def("set_window", &Average::setWindow)
+        .def("dsp", &Average::dsp);
+
+    nb::class_<Biquad>(m, "Biquad")
+        .def(nb::init<int>())
+        .def("butterworth_lp", &Biquad::butterworthLP)
+        .def("butterworth_hp", &Biquad::butterworthHP)
+        .def("butterworth_ap", &Biquad::butterworthAP)
+        .def("linkwitz_riley_lp", &Biquad::linkwitzRileyLP)
+        .def("linkwitz_riley_hp", &Biquad::linkwitzRileyHP)
+        .def("dsp", &Biquad::dsp);
+
+    nb::class_<Comb>(m, "Comb")
+        .def(nb::init<long, long>())
+        .def_prop_ro("max_x_delay", &Comb::getMaxXDelay)
+        .def_prop_ro("max_y_delay", &Comb::getMaxYDelay)
+        .def("set_x_delay", &Comb::setXDelay)
+        .def("set_y_delay", &Comb::setYDelay)
+        .def("set_x_ydelay", &Comb::setXYDelay)
+        .def("set_x_gain", &Comb::setXGain)
+        .def("set_y_gain", &Comb::setYGain)
+        .def("set_xy_gain", &Comb::setXYGain)
+        .def("dsp", &Comb::dsp);
+
+    nb::class_<DCFilter>(m, "DCFilter")
+        .def(nb::init<>())
+        .SDT_BIND_PROPERTY_RW(feedback, DCFilter, Feedback, double)
+        .SDT_BIND_PROPERTY_RW(frequency, DCFilter, Frequency, double)
+        .def("dsp", &DCFilter::dsp);
+
+    nb::class_<Delay>(m, "Delay")
+        .def(nb::init<int>())
+        .def_prop_ro("max_delay", &Delay::getMaxDelay)
+        .SDT_BIND_PROPERTY_RW(delay, Delay, Delay, double)
+        .def("clear", &Delay::clear)
+        .def("dsp", &Delay::dsp);
+
+    nb::class_<Envelope>(m, "Envelope")
+        .def(nb::init<>())
+        .SDT_BIND_PROPERTY_RW(attack, Envelope, Attack, double)
+        .SDT_BIND_PROPERTY_RW(release, Envelope, Release, double)
+        .def("update", &Envelope::update)
+        .def("dsp", &Envelope::dsp);
+
+    nb::class_<OnePole>(m, "OnePole")
+        .def(nb::init<>())
+        .def("set_feedback", &OnePole::setFeedback)
+        .def("lowpass", &OnePole::lowpass)
+        .def("highpass", &OnePole::highpass)
+        .def("dsp", &OnePole::dsp);
+
+    nb::class_<TwoPoles>(m, "TwoPoles")
+        .def(nb::init<>())
+        .def("lowpass", &TwoPoles::lowpass)
+        .def("highpass", &TwoPoles::highpass)
+        .def("resonant", &TwoPoles::resonant)
+        .def("dsp", &TwoPoles::dsp);
+
+    nb::class_<Waveguide>(m, "Waveguide")
+        .def(nb::init<int>())
+        .def_prop_ro("max_delay", &Waveguide::getMaxDelay)
+        .SDT_BIND_PROPERTY_RW(fwd_feedback, Waveguide, FwdFeedback, double)
+        .SDT_BIND_PROPERTY_RW(rev_feedback, Waveguide, RevFeedback, double)
+        .def_prop_ro("fwd_out", &Waveguide::getFwdOut)
+        .def_prop_ro("rev_out", &Waveguide::getRevOut)
+        .def("dsp", &Waveguide::dsp);
+}
+
 void add_gases_submodule(nb::module_ &root) {
     nb::module_ m = root.def_submodule("gases");
 
@@ -340,6 +419,7 @@ NB_MODULE(pysdt, m) {
     add_dcmotor_submodule(m);
     add_demix_submodule(m);
     add_effects_submodule(m);
+    add_filters_submodule(m);
     add_gases_submodule(m);
     add_interactors_submodule(m);
     add_liquids_submodule(m);

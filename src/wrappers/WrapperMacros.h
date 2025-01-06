@@ -13,7 +13,7 @@ public: \
     STRUCT_NAME(STRUCT_NAME&&) = delete; \
     template <typename ...Args> \
     explicit STRUCT_NAME(Args&& ...args) \
-        : ptr(std::unique_ptr<SDT##STRUCT_NAME, Deleter>(SDT##STRUCT_NAME##_new(std::forward<Args>(args)...), SDT##STRUCT_NAME##_free)) {} \
+        : ptr(std::unique_ptr<SDT##STRUCT_NAME, Deleter>(SDT##STRUCT_NAME##_new(std::forward<Args>(args)...), &SDT##STRUCT_NAME##_free)) {} \
     SDT##STRUCT_NAME* getRawPointer() { \
         return ptr.get(); \
     } \
