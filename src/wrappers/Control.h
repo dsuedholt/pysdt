@@ -1,7 +1,5 @@
 #pragma once
 
-#include <utility>
-
 #include <SDT/SDTControl.h>
 #include "WrapperMacros.h"
 
@@ -30,15 +28,9 @@ namespace sdtwrappers {
 
         void reset() { SDTBreaking_reset(ptr.get()); }
 
-        std::pair<double, double> dsp() {
-            SDTBreaking_dsp(ptr.get(), dspOuts);
-            return {dspOuts[0], dspOuts[1]};
-        }
+        SDT_WRAP_DSP_MANY_OUT_NO_IN(Breaking, 2)
 
         bool hasFinished() { return SDTBreaking_hasFinished(ptr.get()); }
-
-    private:
-        double dspOuts[2] = {0, 0};
     };
 
     class Crumpling {
@@ -49,13 +41,7 @@ namespace sdtwrappers {
         SDT_WRAP_PROPERTY(Crumpling, Granularity, double)
         SDT_WRAP_PROPERTY(Crumpling, Fragmentation, double)
 
-        std::pair<double, double> dsp() {
-            SDTCrumpling_dsp(ptr.get(), dspOuts);
-            return {dspOuts[0], dspOuts[1]};
-        }
-
-    private:
-        double dspOuts[2] = {0, 0};
+        SDT_WRAP_DSP_MANY_OUT_NO_IN(Crumpling, 2)
     };
 
     class Rolling {

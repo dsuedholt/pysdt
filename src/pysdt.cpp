@@ -2,9 +2,11 @@
 #include <nanobind/ndarray.h>
 #include <nanobind/stl/shared_ptr.h>
 #include <nanobind/stl/pair.h>
+#include <nanobind/stl/array.h>
 
 #include <SDT/SDTCommon.h>
 
+#include "wrappers/Analysis.h"
 #include "wrappers/Control.h"
 #include "wrappers/Gases.h"
 #include "wrappers/Interactors.h"
@@ -19,6 +21,40 @@ using namespace nb::literals;
 using arr1d = nb::ndarray<double, nb::ndim<1>>;
 
 using namespace sdtwrappers;
+
+void add_analysis_submodule(nb::module_ &root) {
+    nb::module_ m = root.def_submodule("analysis");
+
+    nb::class_<Pitch>(m, "Pitch")
+        .def(nb::init<unsigned int>())
+        .SDT_BIND_PROPERTY_RW(size, Pitch, Size, unsigned int)
+        .SDT_BIND_PROPERTY_RW(overlap, Pitch, Overlap, double)
+        .SDT_BIND_PROPERTY_RW(tolerance, Pitch, Tolerance, double)
+        .def("dsp", &Pitch::dsp);
+
+    nb::class_<Myoelastic>(m, "Myoelastic")
+        .def(nb::init<>())
+        .SDT_BIND_PROPERTY_RW(dc_frequency, Myoelastic, DcFrequency, double)
+        .SDT_BIND_PROPERTY_RW(low_frequency, Myoelastic, LowFrequency, double)
+        .SDT_BIND_PROPERTY_RW(high_frequency, Myoelastic, HighFrequency, double)
+        .SDT_BIND_PROPERTY_RW(threshold, Myoelastic, Threshold, double)
+        .def("update", &Myoelastic::update)
+        .def("dsp", &Myoelastic::dsp);
+
+    nb::class_<SpectralFeats>(m, "SpectralFeats")
+        .def(nb::init<unsigned int>())
+        .SDT_BIND_PROPERTY_RW(max_freq, SpectralFeats, MaxFreq, double)
+        .SDT_BIND_PROPERTY_RW(min_freq, SpectralFeats, MinFreq, double)
+        .SDT_BIND_PROPERTY_RW(overlap, SpectralFeats, Overlap, double)
+        .SDT_BIND_PROPERTY_RW(size, SpectralFeats, Size, unsigned int)
+        .def("dsp", &SpectralFeats::dsp);
+
+    nb::class_<ZeroCrossing>(m, "ZeroCrossing")
+        .def(nb::init<unsigned int>())
+        .SDT_BIND_PROPERTY_RW(overlap, ZeroCrossing, Overlap, double)
+        .SDT_BIND_PROPERTY_RW(size, ZeroCrossing, Size, unsigned int)
+        .def("dsp", &ZeroCrossing::dsp);
+}
 
 void add_control_submodule(nb::module_ &root) {
     nb::module_ m = root.def_submodule("control");
@@ -237,6 +273,7 @@ void add_resonators_submodule(nb::module_& root) {
 }
 
 NB_MODULE(pysdt, m) {
+    add_analysis_submodule(m);
     add_control_submodule(m);
     add_common_submodule(m);
     add_gases_submodule(m);

@@ -20,13 +20,7 @@ namespace sdtwrappers {
 
         void trigger() { SDTExplosion_trigger(ptr.get()); }
 
-        std::pair<double, double> dsp() {
-            SDTExplosion_dsp(ptr.get(), dspOuts);
-            return {dspOuts[0], dspOuts[1]};
-        }
-
-    private:
-        double dspOuts[2] = {0, 0};
+        SDT_WRAP_DSP_MANY_OUT_NO_IN(Explosion, 2)
     };
 
     class WindKarman {

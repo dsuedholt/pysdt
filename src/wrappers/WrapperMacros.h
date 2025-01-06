@@ -1,6 +1,8 @@
 #pragma once
 
 #include <memory>
+#include <array>
+#include <utility>
 
 #define SDT_WRAP_STRUCT(STRUCT_NAME) \
 private: \
@@ -24,3 +26,21 @@ public: \
         SDT##STRUCT_NAME##_set##PROP_NAME(ptr.get(), PROP_NAME); \
     } \
 
+#define SDT_WRAP_DSP(STRUCT_NAME) \
+    double dsp() { \
+        return SDT##STRUCT_NAME##_dsp(ptr.get()); \
+    } \
+
+#define SDT_WRAP_ANALYSIS_DSP(STRUCT_NAME, NUM_OUTS) \
+    std::pair<bool, std::array<double, NUM_OUTS>> dsp(const double in) { \
+        std::array<double, NUM_OUTS> dspOuts = {}; \
+        bool updated = SDT##STRUCT_NAME##_dsp(ptr.get(), dspOuts.data(), in); \
+        return {updated, dspOuts}; \
+    } \
+
+#define SDT_WRAP_DSP_MANY_OUT_NO_IN(STRUCT_NAME, NUM_OUTS) \
+    std::array<double, NUM_OUTS> dsp() { \
+        std::array<double, NUM_OUTS> dspOuts = {}; \
+        SDT##STRUCT_NAME##_dsp(ptr.get(), dspOuts.data()); \
+        return dspOuts; \
+    } \
