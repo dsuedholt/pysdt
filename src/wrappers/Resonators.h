@@ -1,6 +1,6 @@
 #pragma once
 
-#include <SDT/SDTResonators.h>
+#include <SDTResonators.h>
 #include "WrapperMacros.h"
 
 namespace sdtwrappers {

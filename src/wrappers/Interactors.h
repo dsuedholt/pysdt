@@ -2,7 +2,7 @@
 
 #include <vector>
 
-#include <SDT/SDTInteractors.h>
+#include <SDTInteractors.h>
 
 #include "Resonators.h"
 #include "WrapperMacros.h"

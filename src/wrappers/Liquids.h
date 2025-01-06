@@ -1,6 +1,6 @@
 #pragma once
 
-#include <SDT/SDTLiquids.h>
+#include <SDTLiquids.h>
 #include "WrapperMacros.h"
 
 

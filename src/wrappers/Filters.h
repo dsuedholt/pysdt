@@ -1,6 +1,6 @@
 #pragma once
 
-#include <SDT/SDTFilters.h>
+#include <SDTFilters.h>
 #include "WrapperMacros.h"
 
 namespace sdtwrappers {

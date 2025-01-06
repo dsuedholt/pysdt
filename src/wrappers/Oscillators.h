@@ -1,6 +1,6 @@
 #pragma once
 
-#include <SDT/SDTOscillators.h>
+#include <SDTOscillators.h>
 #include "WrapperMacros.h"
 
 namespace sdtwrappers {

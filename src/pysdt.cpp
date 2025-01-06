@@ -4,7 +4,7 @@
 #include <nanobind/stl/pair.h>
 #include <nanobind/stl/array.h>
 
-#include <SDT/SDTCommon.h>
+#include <SDTCommon.h>
 
 #include "wrappers/Analysis.h"
 #include "wrappers/Control.h"
@@ -454,7 +454,7 @@ void add_resonators_submodule(nb::module_& root) {
         .def("dsp", &Resonator::dsp);
 }
 
-NB_MODULE(pysdt, m) {
+NB_MODULE(_pysdt_impl, m) {
     add_analysis_submodule(m);
     add_control_submodule(m);
     add_common_submodule(m);

@@ -51,3 +51,4 @@ public: \
         SDT##STRUCT_NAME##_dsp(ptr.get(), dspOuts.data()); \
         return dspOuts; \
     } \
+

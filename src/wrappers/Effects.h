@@ -1,6 +1,6 @@
 #pragma once
 
-#include <SDT/SDTEffects.h>
+#include <SDTEffects.h>
 #include "WrapperMacros.h"
 
 namespace sdtwrappers {

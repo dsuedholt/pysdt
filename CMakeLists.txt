@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.30)
 
-include(ExternalProject)
+include(FetchContent)
 
 project(pysdt LANGUAGES CXX)
 
@@ -28,36 +28,66 @@ if (NOT SKBUILD)
 endif()
 
 # Try to import all Python components potentially needed by nanobind
-find_package(Python 3.13
+find_package(Python
   REQUIRED COMPONENTS Interpreter Development.Module
-  OPTIONAL_COMPONENTS Development.SABIModule)
-
-execute_process(
-  COMMAND ${Python_EXECUTABLE} -m nanobind --cmake_dir
-  OUTPUT_VARIABLE nanobind_DIR
-  OUTPUT_STRIP_TRAILING_WHITESPACE
+  OPTIONAL_COMPONENTS Development.SABIModule
 )
 
 # Import nanobind through CMake's find_package mechanism
 find_package(nanobind CONFIG REQUIRED)
 
-set(BINDINGS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src/bindings)
+nanobind_add_module(_pysdt_impl STABLE_ABI NB_STATIC src/pysdt.cpp)
+set_target_properties(_pysdt_impl PROPERTIES BUILD_WITH_INSTALL_RPATH TRUE)
 
-find_library(SDT_PATH SDT HINTS sdt-libs/SDT_macosx_lib_83.0.0/SDT)
-add_library(sdt SHARED IMPORTED src/wrappers/WrapperMacros.h)
-set_target_properties(sdt
-  PROPERTIES IMPORTED_LOCATION ${SDT_PATH}
+set(SDT_URL_BASE "https://github.com/SkAT-VG/SDT/releases/download/v83.0.0-Max3.1.0-Pd0.97.0")
+set(SDT_BASE_DIR "${CMAKE_CURRENT_BINARY_DIR}/sdt-lib")
+set(SDT_HEADER_DIR "${SDT_BASE_DIR}/include/SDT")
+set(WHEELS_LIB_DIR ".libs")
+
+if (CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+
+  FetchContent_Declare(sdtlib
+    URL "${SDT_URL_BASE}/SDT_macosx_lib_83.0.0.zip"
+    URL_HASH MD5=b7ae1f6f1c446103fa754a9899d00182
+    SOURCE_DIR ${SDT_BASE_DIR}
+  )
+  set(SDT_LIB_FILE "${SDT_BASE_DIR}/SDT/SDT.framework/SDT")
+  set(SDT_HEADER_DIR "${SDT_BASE_DIR}/SDT/SDT.framework/Headers")
+  set_target_properties(_pysdt_impl PROPERTIES INSTALL_RPATH "@loader_path/.libs")
+elseif (CMAKE_SYSTEM_NAME STREQUAL "Linux")
+  FetchContent_Declare(sdtlib
+    URL "${SDT_URL_BASE}/SDT_linux_lib_83.0.0.zip"
+    URL_HASH MD5=7b28d61179284be9ff7919b6db005fc7
+    SOURCE_DIR ${SDT_BASE_DIR}
+  )
+  set(SDT_LIB_FILE "${SDT_BASE_DIR}/lib/libSDT.so")
+  set_target_properties(_pysdt_impl PROPERTIES INSTALL_RPATH "$ORIGIN/.libs")
+
+elseif (CMAKE_SYSTEM_NAME STREQUAL "Windows")
+  FetchContent_Declare(sdtlib
+    URL "${SDT_URL_BASE}/SDT_win64_lib_83.0.0.zip"
+    URL_HASH MD5=98454896065634b71c38c37d9d5981bb
+    SOURCE_DIR ${SDT_BASE_DIR}
+  )
+  set(SDT_LIB_FILE "${SDT_BASE_DIR}/lib/libSDT64.dll")
+  set(WHEELS_LIB_DIR "")
+else()
+  message(FATAL_ERROR "Unsupported platform")
+endif()
+
+FetchContent_MakeAvailable(sdtlib)
+
+get_filename_component(SDT_LIB_NAME "${SDT_LIB_FILE}" NAME)
+
+file(COPY ${SDT_LIB_FILE} DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+
+add_library(sdt SHARED IMPORTED)
+set_target_properties(sdt PROPERTIES
+  IMPORTED_LOCATION ${SDT_LIB_NAME}
+  IMPORT_NO_SONAME TRUE
+  INTERFACE_INCLUDE_DIRECTORIES ${SDT_HEADER_DIR}
 )
-set_target_properties(sdt
-  PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "${SDT_PATH}/Headers"
-)
 
-nanobind_add_module(pysdt STABLE_ABI NB_STATIC src/pysdt.cpp)
-
-set_target_properties(pysdt
-  PROPERTIES INSTALL_RPATH "@loader_path;@loader_path/SDT.framework"
-)
-
-target_link_libraries(pysdt PRIVATE sdt)
-install(TARGETS pysdt LIBRARY DESTINATION pysdt)
-install(IMPORTED_RUNTIME_ARTIFACTS sdt DESTINATION pysdt)
+target_link_libraries(_pysdt_impl PRIVATE sdt)
+install(TARGETS _pysdt_impl LIBRARY DESTINATION pysdt)
+install(FILES "${CMAKE_CURRENT_BINARY_DIR}/${SDT_LIB_NAME}" DESTINATION pysdt/${WHEELS_LIB_DIR})

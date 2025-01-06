@@ -1,6 +1,6 @@
 #pragma once
 
-#include <SDT/SDTAnalysis.h>
+#include <SDTAnalysis.h>
 
 #include "WrapperMacros.h"
 

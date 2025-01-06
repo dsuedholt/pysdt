@@ -1,6 +1,6 @@
 #pragma once
 
-#include <SDT/SDTDCMotor.h>
+#include <SDTDCMotor.h>
 #include "WrapperMacros.h"
 
 namespace sdtwrappers {
