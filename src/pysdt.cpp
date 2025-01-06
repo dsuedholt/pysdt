@@ -6,6 +6,7 @@
 #include <SDT/SDTCommon.h>
 
 #include "wrappers/Control.h"
+#include "wrappers/Gases.h"
 #include "wrappers/Interactors.h"
 #include "wrappers/Liquids.h"
 #include "wrappers/Resonators.h"
@@ -127,6 +128,43 @@ void add_common_submodule(nb::module_ &root) {
     );
 }
 
+void add_gases_submodule(nb::module_ &root) {
+    nb::module_ m = root.def_submodule("gases");
+
+    nb::class_<Explosion>(m, "Explosion")
+        .def(nb::init<long, long>())
+        .SDT_BIND_PROPERTY_RW(max_scatter, Explosion, MaxScatter, double)
+        .SDT_BIND_PROPERTY_RW(max_delay, Explosion, MaxDelay, double)
+        .SDT_BIND_PROPERTY_RW(blast_time, Explosion, BlastTime, double)
+        .SDT_BIND_PROPERTY_RW(scatter_time, Explosion, ScatterTime, double)
+        .SDT_BIND_PROPERTY_RW(dispersion, Explosion, Dispersion, double)
+        .SDT_BIND_PROPERTY_RW(distance, Explosion, Distance, double)
+        .SDT_BIND_PROPERTY_RW(wave_speed, Explosion, WaveSpeed, double)
+        .SDT_BIND_PROPERTY_RW(wind_speed, Explosion, WindSpeed, double)
+        .def("trigger", &Explosion::trigger)
+        .def("dsp", &Explosion::dsp);
+
+    nb::class_<WindKarman>(m, "WindKarman")
+        .def(nb::init<>())
+        .SDT_BIND_PROPERTY_RW(diameter, WindKarman, Diameter, double)
+        .SDT_BIND_PROPERTY_RW(wind_speed, WindKarman, WindSpeed, double)
+        .def("dsp", &WindKarman::dsp);
+
+    nb::class_<WindFlow>(m, "WindFlow")
+        .def(nb::init<>())
+        .SDT_BIND_PROPERTY_RW(wind_speed, WindFlow, WindSpeed, double)
+        .def("update", &WindFlow::update)
+        .def("dsp", &WindFlow::dsp);
+
+    nb::class_<WindCavity>(m, "WindCavity")
+        .def(nb::init<int>())
+        .SDT_BIND_PROPERTY_RW(max_delay, WindCavity, MaxDelay, double)
+        .SDT_BIND_PROPERTY_RW(length, WindCavity, Length, double)
+        .SDT_BIND_PROPERTY_RW(diameter, WindCavity, Diameter, double)
+        .SDT_BIND_PROPERTY_RW(wind_speed, WindCavity, WindSpeed, double)
+        .def("dsp", &WindCavity::dsp);
+}
+
 void add_interactors_submodule(nb::module_& root) {
     nb::module_ m = root.def_submodule("interactors");
 
@@ -201,6 +239,7 @@ void add_resonators_submodule(nb::module_& root) {
 NB_MODULE(pysdt, m) {
     add_control_submodule(m);
     add_common_submodule(m);
+    add_gases_submodule(m);
     add_interactors_submodule(m);
     add_liquids_submodule(m);
     add_resonators_submodule(m);
