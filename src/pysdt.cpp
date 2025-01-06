@@ -10,6 +10,7 @@
 #include "wrappers/Control.h"
 #include "wrappers/DCMotor.h"
 #include "wrappers/Demix.h"
+#include "wrappers/Effects.h"
 #include "wrappers/Gases.h"
 #include "wrappers/Interactors.h"
 #include "wrappers/Liquids.h"
@@ -200,6 +201,30 @@ void add_demix_submodule(nb::module_ &root) {
         .def("dsp", &Demix::dsp);
 }
 
+void add_effects_submodule(nb::module_ &root) {
+    nb::module_ m = root.def_submodule("effects");
+
+    nb::class_<PitchShift>(m, "PitchShift")
+        .def(nb::init<int, int>())
+        .SDT_BIND_PROPERTY_RW(size, PitchShift, Size, int)
+        .SDT_BIND_PROPERTY_RW(oversample, PitchShift, Oversample, int)
+        .SDT_BIND_PROPERTY_RW(ratio, PitchShift, Ratio, double)
+        .SDT_BIND_PROPERTY_RW(overlap, PitchShift, Overlap, double)
+        .def("dsp", &PitchShift::dsp);
+
+    nb::class_<Reverb>(m, "Reverb")
+        .def(nb::init<long>())
+        .SDT_BIND_PROPERTY_RW(max_delay, Reverb, MaxDelay, long)
+        .SDT_BIND_PROPERTY_RW(x_size, Reverb, XSize, double)
+        .SDT_BIND_PROPERTY_RW(y_size, Reverb, YSize, double)
+        .SDT_BIND_PROPERTY_RW(z_size, Reverb, ZSize, double)
+        .SDT_BIND_PROPERTY_RW(randomness, Reverb, Randomness, double)
+        .SDT_BIND_PROPERTY_RW(time, Reverb, Time, double)
+        .SDT_BIND_PROPERTY_RW(time_1k, Reverb, Time1k, double)
+        .def("update", &Reverb::update)
+        .def("dsp", &Reverb::dsp);
+}
+
 void add_gases_submodule(nb::module_ &root) {
     nb::module_ m = root.def_submodule("gases");
 
@@ -314,6 +339,7 @@ NB_MODULE(pysdt, m) {
     add_common_submodule(m);
     add_dcmotor_submodule(m);
     add_demix_submodule(m);
+    add_effects_submodule(m);
     add_gases_submodule(m);
     add_interactors_submodule(m);
     add_liquids_submodule(m);
