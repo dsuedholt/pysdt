@@ -16,6 +16,7 @@
 #include "wrappers/Interactors.h"
 #include "wrappers/Liquids.h"
 #include "wrappers/Resonators.h"
+#include "wrappers/Motor.h"
 
 #include "BindingMacros.h"
 
@@ -412,6 +413,36 @@ void add_resonators_submodule(nb::module_& root) {
         .def("dsp", &Resonator::dsp);
 }
 
+void add_motor_submodule(nb::module_& root) {
+    nb::module_ m = root.def_submodule("motor");
+
+    nb::class_<Motor>(m, "Motor")
+        .def(nb::init<long>())
+        .def("set_rpm", &Motor::setRpm)
+        .SDT_BIND_PROPERTY_RW(max_delay, Motor, MaxDelay, long)
+        .SDT_BIND_PROPERTY_RW(cycle, Motor, Cycle, double)
+        .SDT_BIND_PROPERTY_RW(throttle, Motor, Throttle, double)
+        .SDT_BIND_PROPERTY_RW(n_cylinders, Motor, NCylinders, int)
+        .SDT_BIND_PROPERTY_RW(cylinder_size, Motor, CylinderSize, double)
+        .SDT_BIND_PROPERTY_RW(compression_ratio, Motor, CompressionRatio, double)
+        .SDT_BIND_PROPERTY_RW(spark_time, Motor, SparkTime, double)
+        .SDT_BIND_PROPERTY_RW(asymmetry, Motor, Asymmetry, double)
+        .SDT_BIND_PROPERTY_RW(backfire, Motor, Backfire, double)
+        .SDT_BIND_PROPERTY_RW(intake_size, Motor, IntakeSize, double)
+        .SDT_BIND_PROPERTY_RW(extractor_size, Motor, ExtractorSize, double)
+        .SDT_BIND_PROPERTY_RW(exhaust_size, Motor, ExhaustSize, double)
+        .SDT_BIND_PROPERTY_RW(expansion, Motor, Expansion, double)
+        .SDT_BIND_PROPERTY_RW(muffler_size, Motor, MufflerSize, double)
+        .SDT_BIND_PROPERTY_RW(muffler_feedback, Motor, MufflerFeedback, double)
+        .SDT_BIND_PROPERTY_RW(outlet_size, Motor, OutletSize, double)
+        .SDT_BIND_PROPERTY_RW(damp, Motor, Damp, double)
+        .SDT_BIND_PROPERTY_RW(dc, Motor, Dc, double)
+        .def("set_two_stroke", &Motor::setTwoStroke)
+        .def("set_four_stroke", &Motor::setFourStroke)
+        .def("update", &Motor::update)
+        .def("dsp", &Motor::dsp);
+}
+
 NB_MODULE(pysdt, m) {
     add_analysis_submodule(m);
     add_control_submodule(m);
@@ -423,5 +454,6 @@ NB_MODULE(pysdt, m) {
     add_gases_submodule(m);
     add_interactors_submodule(m);
     add_liquids_submodule(m);
+    add_motor_submodule(m);
     add_resonators_submodule(m);
 }
