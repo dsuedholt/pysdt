@@ -15,8 +15,9 @@
 #include "wrappers/Gases.h"
 #include "wrappers/Interactors.h"
 #include "wrappers/Liquids.h"
-#include "wrappers/Resonators.h"
 #include "wrappers/Motor.h"
+#include "wrappers/Oscillators.h"
+#include "wrappers/Resonators.h"
 
 #include "BindingMacros.h"
 
@@ -387,32 +388,6 @@ void add_liquids_submodule(nb::module_& root) {
         .def("dsp", &FluidFlow::dsp);
 }
 
-void add_resonators_submodule(nb::module_& root) {
-    nb::module_ m = root.def_submodule("resonators");
-
-    nb::class_<Resonator>(m, "Resonator")
-        .def(nb::init<int, int>())
-        .def("get_position", &Resonator::getPosition)
-        .def("set_position", &Resonator::setPosition)
-        .def("get_velocity", &Resonator::getVelocity)
-        .def("set_velocity", &Resonator::setVelocity)
-        .def("get_frequency", &Resonator::getFrequency)
-        .def("set_frequency", &Resonator::setFrequency)
-        .def("get_decay", &Resonator::getDecay)
-        .def("set_decay", &Resonator::setDecay)
-        .def("get_weight", &Resonator::getWeight)
-        .def("set_weight", &Resonator::setWeight)
-        .def("get_gain", &Resonator::getGain)
-        .def("set_gain", &Resonator::setGain)
-        .SDT_BIND_PROPERTY_RW(n_pickups, Resonator, NPickups, int)
-        .SDT_BIND_PROPERTY_RW(n_modes, Resonator, NModes, int)
-        .SDT_BIND_PROPERTY_RW(active_modes, Resonator, ActiveModes, int)
-        .SDT_BIND_PROPERTY_RW(fragment_size, Resonator, FragmentSize, double)
-        .def("apply_force", &Resonator::applyForce)
-        .def("compute_energy", &Resonator::computeEnergy)
-        .def("dsp", &Resonator::dsp);
-}
-
 void add_motor_submodule(nb::module_& root) {
     nb::module_ m = root.def_submodule("motor");
 
@@ -443,6 +418,42 @@ void add_motor_submodule(nb::module_& root) {
         .def("dsp", &Motor::dsp);
 }
 
+void add_oscillators_submodule(nb::module_& root) {
+    nb::module_ m = root.def_submodule("oscillators");
+
+    nb::class_<PinkNoise>(m, "PinkNoise")
+        .def(nb::init<int>())
+        .def("dsp", &PinkNoise::dsp);
+
+    m.def("white_noise", &whiteNoise);
+}
+
+void add_resonators_submodule(nb::module_& root) {
+    nb::module_ m = root.def_submodule("resonators");
+
+    nb::class_<Resonator>(m, "Resonator")
+        .def(nb::init<int, int>())
+        .def("get_position", &Resonator::getPosition)
+        .def("set_position", &Resonator::setPosition)
+        .def("get_velocity", &Resonator::getVelocity)
+        .def("set_velocity", &Resonator::setVelocity)
+        .def("get_frequency", &Resonator::getFrequency)
+        .def("set_frequency", &Resonator::setFrequency)
+        .def("get_decay", &Resonator::getDecay)
+        .def("set_decay", &Resonator::setDecay)
+        .def("get_weight", &Resonator::getWeight)
+        .def("set_weight", &Resonator::setWeight)
+        .def("get_gain", &Resonator::getGain)
+        .def("set_gain", &Resonator::setGain)
+        .SDT_BIND_PROPERTY_RW(n_pickups, Resonator, NPickups, int)
+        .SDT_BIND_PROPERTY_RW(n_modes, Resonator, NModes, int)
+        .SDT_BIND_PROPERTY_RW(active_modes, Resonator, ActiveModes, int)
+        .SDT_BIND_PROPERTY_RW(fragment_size, Resonator, FragmentSize, double)
+        .def("apply_force", &Resonator::applyForce)
+        .def("compute_energy", &Resonator::computeEnergy)
+        .def("dsp", &Resonator::dsp);
+}
+
 NB_MODULE(pysdt, m) {
     add_analysis_submodule(m);
     add_control_submodule(m);
@@ -455,5 +466,6 @@ NB_MODULE(pysdt, m) {
     add_interactors_submodule(m);
     add_liquids_submodule(m);
     add_motor_submodule(m);
+    add_oscillators_submodule(m);
     add_resonators_submodule(m);
 }
