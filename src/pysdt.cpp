@@ -8,6 +8,7 @@
 
 #include "wrappers/Analysis.h"
 #include "wrappers/Control.h"
+#include "wrappers/DCMotor.h"
 #include "wrappers/Gases.h"
 #include "wrappers/Interactors.h"
 #include "wrappers/Liquids.h"
@@ -164,6 +165,27 @@ void add_common_submodule(nb::module_ &root) {
     );
 }
 
+void add_dcmotor_submodule(nb::module_ &root) {
+    nb::module_ m = root.def_submodule("dcmotor");
+
+    nb::class_<DCMotor>(m, "DCMotor")
+        .def(nb::init<long>())
+        .SDT_BIND_PROPERTY_RW(max_size, DCMotor, MaxSize, long)
+        .SDT_BIND_PROPERTY_RW(rpm, DCMotor, Rpm, double)
+        .SDT_BIND_PROPERTY_RW(load, DCMotor, Load, double)
+        .SDT_BIND_PROPERTY_RW(coils, DCMotor, Coils, long)
+        .SDT_BIND_PROPERTY_RW(size, DCMotor, Size, double)
+        .SDT_BIND_PROPERTY_RW(reson, DCMotor, Reson, double)
+        .SDT_BIND_PROPERTY_RW(gear_ratio, DCMotor, GearRatio, double)
+        .SDT_BIND_PROPERTY_RW(harshness, DCMotor, Harshness, double)
+        .SDT_BIND_PROPERTY_RW(rotor_gain, DCMotor, RotorGain, double)
+        .SDT_BIND_PROPERTY_RW(gear_gain, DCMotor, GearGain, double)
+        .SDT_BIND_PROPERTY_RW(brush_gain, DCMotor, BrushGain, double)
+        .SDT_BIND_PROPERTY_RW(air_gain, DCMotor, AirGain, double)
+        .def("update", &DCMotor::update)
+        .def("dsp", &DCMotor::dsp);
+}
+
 void add_gases_submodule(nb::module_ &root) {
     nb::module_ m = root.def_submodule("gases");
 
@@ -276,6 +298,7 @@ NB_MODULE(pysdt, m) {
     add_analysis_submodule(m);
     add_control_submodule(m);
     add_common_submodule(m);
+    add_dcmotor_submodule(m);
     add_gases_submodule(m);
     add_interactors_submodule(m);
     add_liquids_submodule(m);
