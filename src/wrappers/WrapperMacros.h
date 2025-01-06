@@ -3,6 +3,7 @@
 #include <memory>
 #include <array>
 #include <utility>
+#include <string>
 
 #define SDT_WRAP_STRUCT(STRUCT_NAME) \
 private: \
@@ -17,6 +18,22 @@ public: \
     SDT##STRUCT_NAME* getRawPointer() { \
         return ptr.get(); \
     } \
+
+#define SDT_WRAP_REGISTRATION(STRUCT_NAME) \
+private: \
+    std::string name; \
+public: \
+    int register##STRUCT_NAME(std::string name) { \
+        this->name = name; \
+        return SDT_register##STRUCT_NAME(ptr.get(), name.c_str()); \
+    } \
+    int unregister##STRUCT_NAME() { \
+        return SDT_unregister##STRUCT_NAME(name.c_str()); \
+    } \
+    ~STRUCT_NAME() { \
+        unregister##STRUCT_NAME(); \
+    } \
+
 
 #define SDT_WRAP_PROPERTY(STRUCT_NAME, PROP_NAME, PROP_TYPE) \
     PROP_TYPE get##PROP_NAME() const { \

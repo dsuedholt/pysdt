@@ -1,8 +1,10 @@
 #include <nanobind/nanobind.h>
 #include <nanobind/ndarray.h>
-#include <nanobind/stl/shared_ptr.h>
-#include <nanobind/stl/pair.h>
+
 #include <nanobind/stl/array.h>
+#include <nanobind/stl/pair.h>
+#include <nanobind/stl/shared_ptr.h>
+#include <nanobind/stl/string.h>
 
 #include <SDT/SDTCommon.h>
 
@@ -311,6 +313,7 @@ void add_gases_submodule(nb::module_ &root) {
 
     nb::class_<Explosion>(m, "Explosion")
         .def(nb::init<long, long>())
+        .SDT_BIND_REGISTRATION(Explosion)
         .SDT_BIND_PROPERTY_RW(max_scatter, Explosion, MaxScatter, double)
         .SDT_BIND_PROPERTY_RW(max_delay, Explosion, MaxDelay, double)
         .SDT_BIND_PROPERTY_RW(blast_time, Explosion, BlastTime, double)

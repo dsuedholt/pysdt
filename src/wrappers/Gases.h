@@ -9,6 +9,8 @@ namespace sdtwrappers {
     public:
         SDT_WRAP_STRUCT(Explosion)
 
+        SDT_WRAP_REGISTRATION(Explosion)
+
         SDT_WRAP_PROPERTY(Explosion, MaxScatter, double)
         SDT_WRAP_PROPERTY(Explosion, MaxDelay, double)
         SDT_WRAP_PROPERTY(Explosion, BlastTime, double)
