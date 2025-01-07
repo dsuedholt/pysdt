@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.30)
 
 include(FetchContent)
 
-project(pysdt LANGUAGES CXX)
+project(pysdt LANGUAGES CXX C)
 
 if (NOT SKBUILD)
   message(WARNING "\
@@ -27,6 +27,27 @@ if (NOT SKBUILD)
   after editing C++ files.")
 endif()
 
+set(SDT_SRC_DIR "SDT/src/SDT")
+
+file(GLOB SDT_SOURCES
+  "${SDT_SRC_DIR}/*.c"
+  "SDT/3rdparty/json-parser/json.c"
+  "SDT/3rdparty/json-builder/json-builder.c"
+)
+
+set_source_files_properties(${SDT_SOURCES} PROPERTIES LANGUAGE C)
+add_library(sdt STATIC ${SDT_SOURCES})
+
+if(UNIX)
+  target_compile_options(sdt PRIVATE -fPIC)
+endif()
+
+target_include_directories(sdt PUBLIC
+  "${SDT_SRC_DIR}"
+  "SDT/3rdparty/json-parser"
+  "SDT/3rdparty/json-builder"
+)
+
 # Try to import all Python components potentially needed by nanobind
 find_package(Python
   REQUIRED COMPONENTS Interpreter Development.Module
@@ -37,59 +58,6 @@ find_package(Python
 find_package(nanobind CONFIG REQUIRED)
 
 nanobind_add_module(_pysdt_impl STABLE_ABI NB_STATIC src/pysdt.cpp)
-set_target_properties(_pysdt_impl PROPERTIES BUILD_WITH_INSTALL_RPATH TRUE)
-
-set(SDT_URL_BASE "https://github.com/SkAT-VG/SDT/releases/download/v83.0.0-Max3.1.0-Pd0.97.0")
-set(SDT_BASE_DIR "${CMAKE_CURRENT_BINARY_DIR}/sdt-lib")
-set(SDT_HEADER_DIR "${SDT_BASE_DIR}/include/SDT")
-set(WHEELS_LIB_DIR ".libs")
-
-if (CMAKE_SYSTEM_NAME STREQUAL "Darwin")
-
-  FetchContent_Declare(sdtlib
-    URL "${SDT_URL_BASE}/SDT_macosx_lib_83.0.0.zip"
-    URL_HASH MD5=b7ae1f6f1c446103fa754a9899d00182
-    SOURCE_DIR ${SDT_BASE_DIR}
-  )
-  set(SDT_LIB_FILE "${SDT_BASE_DIR}/SDT/SDT.framework/SDT")
-  set(SDT_HEADER_DIR "${SDT_BASE_DIR}/SDT/SDT.framework/Headers")
-  set_target_properties(_pysdt_impl PROPERTIES INSTALL_RPATH "@loader_path/.libs")
-  add_library(sdt SHARED IMPORTED)
-elseif (CMAKE_SYSTEM_NAME STREQUAL "Linux")
-  FetchContent_Declare(sdtlib
-    URL "${SDT_URL_BASE}/SDT_linux_lib_83.0.0.zip"
-    URL_HASH MD5=7b28d61179284be9ff7919b6db005fc7
-    SOURCE_DIR ${SDT_BASE_DIR}
-  )
-  set(SDT_LIB_FILE "${SDT_BASE_DIR}/lib/libSDT.so")
-  set_target_properties(_pysdt_impl PROPERTIES INSTALL_RPATH "$ORIGIN/.libs")
-  add_library(sdt SHARED IMPORTED)
-elseif (CMAKE_SYSTEM_NAME STREQUAL "Windows")
-  FetchContent_Declare(sdtlib
-    URL "${SDT_URL_BASE}/SDT_win64_lib_83.0.0.zip"
-    URL_HASH MD5=98454896065634b71c38c37d9d5981bb
-    SOURCE_DIR ${SDT_BASE_DIR}
-  )
-  set(SDT_LIB_FILE "${SDT_BASE_DIR}/lib/libSDT64.dll")
-  set(WHEELS_LIB_DIR "")
-  add_library(sdt UNKNOWN IMPORTED)
-
-else()
-  message(FATAL_ERROR "Unsupported platform")
-endif()
-
-FetchContent_MakeAvailable(sdtlib)
-
-get_filename_component(SDT_LIB_NAME "${SDT_LIB_FILE}" NAME)
-
-file(RENAME ${SDT_LIB_FILE} ${CMAKE_CURRENT_BINARY_DIR}/${SDT_LIB_NAME})
-
-set_target_properties(sdt PROPERTIES
-  IMPORTED_LOCATION ${SDT_LIB_NAME}
-  IMPORT_NO_SONAME TRUE
-  INTERFACE_INCLUDE_DIRECTORIES ${SDT_HEADER_DIR}
-)
 
 target_link_libraries(_pysdt_impl PRIVATE sdt)
 install(TARGETS _pysdt_impl LIBRARY DESTINATION pysdt)
-install(FILES "${CMAKE_CURRENT_BINARY_DIR}/${SDT_LIB_NAME}" DESTINATION pysdt/${WHEELS_LIB_DIR})
