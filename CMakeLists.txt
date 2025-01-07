@@ -79,7 +79,7 @@ FetchContent_MakeAvailable(sdtlib)
 
 get_filename_component(SDT_LIB_NAME "${SDT_LIB_FILE}" NAME)
 
-file(COPY ${SDT_LIB_FILE} DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+file(RENAME ${SDT_LIB_FILE} ${CMAKE_CURRENT_BINARY_DIR}/${SDT_LIB_NAME})
 
 add_library(sdt SHARED IMPORTED)
 set_target_properties(sdt PROPERTIES
