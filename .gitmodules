@@ -1,0 +1,3 @@
+[submodule "SDT"]
+	path = SDT
+	url = git@github.com:dsuedholt/SDT.git
