@@ -73,6 +73,7 @@ elseif (CMAKE_SYSTEM_NAME STREQUAL "Windows")
   set(SDT_LIB_FILE "${SDT_BASE_DIR}/lib/libSDT64.dll")
   set(WHEELS_LIB_DIR "")
   add_library(sdt UNKNOWN IMPORTED)
+
 else()
   message(FATAL_ERROR "Unsupported platform")
 endif()

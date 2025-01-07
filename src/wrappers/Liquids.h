@@ -3,7 +3,6 @@
 #include <SDTLiquids.h>
 #include "WrapperMacros.h"
 
-
 namespace sdtwrappers {
     class Bubble {
     public:
