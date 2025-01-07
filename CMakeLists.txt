@@ -54,6 +54,7 @@ if (CMAKE_SYSTEM_NAME STREQUAL "Darwin")
   set(SDT_LIB_FILE "${SDT_BASE_DIR}/SDT/SDT.framework/SDT")
   set(SDT_HEADER_DIR "${SDT_BASE_DIR}/SDT/SDT.framework/Headers")
   set_target_properties(_pysdt_impl PROPERTIES INSTALL_RPATH "@loader_path/.libs")
+  add_library(sdt SHARED IMPORTED)
 elseif (CMAKE_SYSTEM_NAME STREQUAL "Linux")
   FetchContent_Declare(sdtlib
     URL "${SDT_URL_BASE}/SDT_linux_lib_83.0.0.zip"
@@ -62,7 +63,7 @@ elseif (CMAKE_SYSTEM_NAME STREQUAL "Linux")
   )
   set(SDT_LIB_FILE "${SDT_BASE_DIR}/lib/libSDT.so")
   set_target_properties(_pysdt_impl PROPERTIES INSTALL_RPATH "$ORIGIN/.libs")
-
+  add_library(sdt SHARED IMPORTED)
 elseif (CMAKE_SYSTEM_NAME STREQUAL "Windows")
   FetchContent_Declare(sdtlib
     URL "${SDT_URL_BASE}/SDT_win64_lib_83.0.0.zip"
@@ -71,6 +72,7 @@ elseif (CMAKE_SYSTEM_NAME STREQUAL "Windows")
   )
   set(SDT_LIB_FILE "${SDT_BASE_DIR}/lib/libSDT64.dll")
   set(WHEELS_LIB_DIR "")
+  add_library(sdt UNKNOWN IMPORTED)
 else()
   message(FATAL_ERROR "Unsupported platform")
 endif()
@@ -81,7 +83,6 @@ get_filename_component(SDT_LIB_NAME "${SDT_LIB_FILE}" NAME)
 
 file(RENAME ${SDT_LIB_FILE} ${CMAKE_CURRENT_BINARY_DIR}/${SDT_LIB_NAME})
 
-add_library(sdt SHARED IMPORTED)
 set_target_properties(sdt PROPERTIES
   IMPORTED_LOCATION ${SDT_LIB_NAME}
   IMPORT_NO_SONAME TRUE
