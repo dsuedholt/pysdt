@@ -23,7 +23,8 @@ jobs:
     - name: Checkout submodules
       run: |
         git submodule update --init SDT
-        git submodule update --init SDT/3rdparty/json-parser SDT/3rdparty/json-builder
+        cd SDT
+        git submodule update --init 3rdparty/json-parser 3rdparty/json-builder
 
     - uses: actions/setup-python@v5
       with:
