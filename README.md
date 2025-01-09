@@ -28,7 +28,7 @@ Alternatively, you can build the bindings yourself. The SDT is included as a sub
 ```
 git clone git@github.com:dsuedholt/pysdt.git
 cd pysdt && git submodule update --init SDT
-cd SDT && git submodule init 3rdparty/json-builder 3rdparty/json-parser
+cd SDT && git submodule update --init 3rdparty/json-builder 3rdparty/json-parser
 cd .. && pip install .
 ```
 
