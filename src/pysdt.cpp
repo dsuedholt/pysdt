@@ -93,17 +93,17 @@ void add_control_submodule(nb::module_ &root) {
 
     nb::class_<Rolling>(m, "Rolling")
         .def(nb::init<>())
-        .SDT_BIND_PROPERTY_RW(energy, Rolling, Grain, double)
-        .SDT_BIND_PROPERTY_RW(size, Rolling, Depth, double)
-        .SDT_BIND_PROPERTY_RW(speed, Rolling, Mass, double)
-        .SDT_BIND_PROPERTY_RW(speed, Rolling, Velocity, double)
+        .SDT_BIND_PROPERTY_RW(grain, Rolling, Grain, double)
+        .SDT_BIND_PROPERTY_RW(depth, Rolling, Depth, double)
+        .SDT_BIND_PROPERTY_RW(mass, Rolling, Mass, double)
+        .SDT_BIND_PROPERTY_RW(velocity, Rolling, Velocity, double)
         .def("dsp", &Rolling::dsp);
 
     nb::class_<Scraping>(m, "Scraping")
         .def(nb::init<>())
-        .SDT_BIND_PROPERTY_RW(energy, Scraping, Grain, double)
-        .SDT_BIND_PROPERTY_RW(size, Scraping, Force, double)
-        .SDT_BIND_PROPERTY_RW(speed, Scraping, Velocity, double)
+        .SDT_BIND_PROPERTY_RW(grain, Scraping, Grain, double)
+        .SDT_BIND_PROPERTY_RW(force, Scraping, Force, double)
+        .SDT_BIND_PROPERTY_RW(velocity, Scraping, Velocity, double)
         .def("dsp", &Scraping::dsp);
 }
 
