@@ -34,6 +34,8 @@ namespace sdtwrappers {
         void applyForce(const unsigned int pickup, const double f) { SDTResonator_applyForce(ptr.get(), pickup, f); }
         double computeEnergy(const unsigned int pickup, const double f) { return SDTResonator_computeEnergy(ptr.get(), pickup, f); }
 
+        void update() { SDTResonator_update(ptr.get()); }
+
         void dsp() { SDTResonator_dsp(ptr.get()); }
     };
 }

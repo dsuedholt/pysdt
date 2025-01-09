@@ -359,6 +359,18 @@ void add_interactors_submodule(nb::module_& root) {
         .SDT_BIND_PROPERTY_RW(stiffness, Impact, Stiffness, double)
         .SDT_BIND_PROPERTY_RW(dissipation, Impact, Dissipation, double)
         .SDT_BIND_PROPERTY_RW(shape, Impact, Shape, double);
+
+    nb::class_<Friction, Interactor>(m, "Friction")
+        .def(nb::init<>())
+        .SDT_BIND_PROPERTY_RW(normal_force, Friction, NormalForce, double)
+        .SDT_BIND_PROPERTY_RW(stribeck_velocity, Friction, StribeckVelocity, double)
+        .SDT_BIND_PROPERTY_RW(static_coefficient, Friction, StaticCoefficient, double)
+        .SDT_BIND_PROPERTY_RW(dynamic_coefficient, Friction, DynamicCoefficient, double)
+        .SDT_BIND_PROPERTY_RW(break_away, Friction, BreakAway, double)
+        .SDT_BIND_PROPERTY_RW(stiffness, Friction, Stiffness, double)
+        .SDT_BIND_PROPERTY_RW(dissipation, Friction, Dissipation, double)
+        .SDT_BIND_PROPERTY_RW(viscosity, Friction, Viscosity, double)
+        .SDT_BIND_PROPERTY_RW(noisiness, Friction, Noisiness, double);
 }
 
 void add_liquids_submodule(nb::module_& root) {
@@ -451,6 +463,7 @@ void add_resonators_submodule(nb::module_& root) {
         .SDT_BIND_PROPERTY_RW(fragment_size, Resonator, FragmentSize, double)
         .def("apply_force", &Resonator::applyForce)
         .def("compute_energy", &Resonator::computeEnergy)
+        .def("update", &Resonator::update)
         .def("dsp", &Resonator::dsp);
 }
 
