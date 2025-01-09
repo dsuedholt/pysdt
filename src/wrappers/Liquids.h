@@ -15,7 +15,7 @@ namespace sdtwrappers {
         void trigger() { SDTBubble_trigger(ptr.get()); }
         void normAmp() { SDTBubble_normAmp(ptr.get()); }
 
-        void dsp() { SDTBubble_dsp(ptr.get()); }
+        double dsp() { return SDTBubble_dsp(ptr.get()); }
     };
 
     class FluidFlow {
@@ -33,6 +33,6 @@ namespace sdtwrappers {
         SDT_WRAP_PROPERTY(FluidFlow, RiseCutoff, double)
         SDT_WRAP_PROPERTY(FluidFlow, AvgRate, double)
 
-        void dsp() { SDTFluidFlow_dsp(ptr.get()); }
+        double dsp() { return SDTFluidFlow_dsp(ptr.get()); }
     };
 }
