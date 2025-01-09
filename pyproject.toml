@@ -4,7 +4,7 @@ build-backend = "scikit_build_core.build"
 
 [project]
 name = "pysdt"
-version = "0.1.0"
+version = "0.1.1"
 description = "A thin Python wrapper around the Sound Design Toolkit"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -38,12 +38,10 @@ sdist.cmake = true
 # Necessary to see build output from the actual compilation
 build-verbosity = 1
 build-frontend = "build[uv]"
-archs = ["auto64"]
-skip = ["pp*", "*-musllinux*"]
+skip = ["pp*"]
 
 test-command = "pytest {project}/tests"
 test-requires = "pytest"
 
-# Needed for full C++17 support
 [tool.cibuildwheel.macos.environment]
 MACOSX_DEPLOYMENT_TARGET = "11.0"

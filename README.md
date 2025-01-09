@@ -17,20 +17,20 @@ Most of the SDT functionality is available in the bindings, **except for**
 
 ### Installation
 
-Packaged wheels are available for Linux and MacOS.
+Packaged wheels are available for Linux, MacOS and Windows.
 
 ```
 pip install pysdt
 ```
 
-Alternatively, you can build the bindings yourself:
+Alternatively, you can build the bindings yourself. The SDT is included as a submodule in this repository (with slight modifications to ensure MSVC compatibility). Two submodules of the SDT itself will need to be initialized as well.
 
 ```
-git clone git@github.com:dsuedholt/pysdt.git && cd pysdt
-pip install .
+git clone git@github.com:dsuedholt/pysdt.git
+cd pysdt && git submodule update --init SDT
+cd SDT/3rdparty && git submodule init json-builder json-parser
+cd ../.. && pip install .
 ```
-
-Currently, a pre-built dynamic library for the respective platform is downloaded at build-time and packaged together with the Python bindings. This works but has some limitations, I haven't quite figured out how to make it work for Windows. In the future, I should probably move towards building the SDT from source.
 
 ### Usage
 
